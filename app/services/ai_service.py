@@ -1,0 +1,23 @@
+from app.ai.client import get_client
+from app.core.config import settings
+
+VALID_LABELS = {"positive", "negative", "neutral"}
+
+
+def classify(text: str) -> str:
+    if settings.TEST_MODE:
+        return "neutral"
+
+    response = get_client().chat.completions.create(
+        model=settings.MODEL,
+        messages=[
+            {"role": "system", "content": settings.PROMPT},
+            {"role": "user", "content": text},
+        ],
+        temperature=0,
+    )
+
+    content = (response.choices[0].message.content or "").strip().lower()
+    if content not in VALID_LABELS:
+        return "neutral"
+    return content
