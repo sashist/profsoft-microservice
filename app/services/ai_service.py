@@ -1,4 +1,4 @@
-from app.ai.client import get_client
+from app.ai.client import client
 from app.core.config import settings
 
 VALID_LABELS = {"positive", "negative", "neutral"}
@@ -8,7 +8,7 @@ def classify(text: str) -> str:
     if settings.TEST_MODE:
         return "neutral"
 
-    response = get_client().chat.completions.create(
+    response = client.chat.completions.create(
         model=settings.MODEL,
         messages=[
             {"role": "system", "content": settings.PROMPT},

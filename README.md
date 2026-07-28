@@ -27,5 +27,9 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ### Docker
 
 ```bash
+# 1. Создать .env
+cp env.example .env
+
+# 2. Запустить контейнеры
 docker compose up --build -d
 ```

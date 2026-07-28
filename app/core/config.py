@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     # URL внешнего приёмника результатов (куда отправляем ответы)
     RESULT_URL: str
 
-    OPENAI_API_KEY: str = ""
+    OPENAI_API_KEY: str = "test-key"
     MODEL: str = "gpt-4o-mini"
     PROMPT: str = "Определи тональность отзыва. Ответь строго одним словом: positive, negative или neutral."
     TEST_MODE: bool = False
@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
+        env_ignore_empty=True,
     )
-
 
 settings = Settings()
