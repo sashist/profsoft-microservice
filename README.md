@@ -4,23 +4,21 @@
 
 ## Технологический стек
 
-- **FastAPI** — веб-фреймворк для обработки HTTP-запросов
-- **PostgreSQL + SQLAlchemy + Alembic** — хранение метаданных документов и миграции
+- **FastAPI** — веб-фреймворк
+- **PostgreSQL + SQLAlchemy + Alembic** — база данных и миграции
 - **Qdrant** — векторная база данных
-- **AsyncIOScheduler (APScheduler)** — фоновый асинхронный воркер для индексации
-- **Poetry** — управление зависимостями и окружением
+- **AsyncIOScheduler (APScheduler)** — фоновый асинхронный воркер
+- **Poetry** — управление зависимостями
 
 ## Запуск проекта
 
-### 1. Конфигурация перемененных окружения
+### 1. Файл конфигурации
 
-Скопируйте шаблон файла конфигурации:
+Скопируйте шаблон переменных окружения:
 
 ```bash
 cp env.example .env
 ```
-
-По умолчанию в `.env` включен автономный режим `TEST_MODE=True`, не требующий сторонних API-ключей. Для работы с внешними моделями укажите `GEMINI_API_KEY` или `OPENAI_API_KEY` и переключите `TEST_MODE=False`.
 
 ### 2. Запуск сервисов
 
@@ -28,7 +26,7 @@ cp env.example .env
 docker compose up --build -d
 ```
 
-Сервер FastAPI доступен по адресу `http://localhost:8000`.
+Сервер доступен по адресу `http://localhost:8000`.
 
 ### 3. Загрузка тестовых данных
 
@@ -40,7 +38,7 @@ python scripts/seed_data.py
 
 ## Примеры использования API
 
-### 1. Добавление документа
+### Добавление документа
 
 ```bash
 curl -X POST http://localhost:8000/documents/ \
@@ -51,7 +49,7 @@ curl -X POST http://localhost:8000/documents/ \
   }'
 ```
 
-### 2. Поиск ответа по базе знаний (RAG)
+### Поиск ответа по базе знаний (RAG)
 
 ```bash
 curl -X POST http://localhost:8000/ask \
@@ -59,12 +57,30 @@ curl -X POST http://localhost:8000/ask \
   -d '{"question": "Сколько дней составляет отпуск?"}'
 ```
 
-### 3. Получение списка документов и статусов
+### Список документов и статусов
 
 ```bash
 curl http://localhost:8000/documents/
 ```
 
-## Веб-интерфейсы
+## Структура проекта
 
-- Панель управления Qdrant: `http://localhost:6333/dashboard`
+```text
+.
+├── app/
+│   ├── api/            # Эндпоинты FastAPI (documents, ask, health)
+│   ├── core/           # Настройки и конфигурация
+│   ├── db/             # Подключение к PostgreSQL
+│   ├── models/         # Модели SQLAlchemy и схемы Pydantic
+│   ├── services/       # Логика RAG, чанкинг и эмбеддинги
+│   ├── vector/         # Клиент Qdrant DB
+│   └── workers/        # Асинхронный планировщик APScheduler
+├── alembic/            # Миграции базы данных
+├── scripts/            # Скрипты загрузки тестовых данных
+├── docker-compose.yml  # Оркестрация контейнеров
+└── pyproject.toml      # Зависимости Poetry
+```
+
+## Вспомогательные интерфейсы
+
+- Панель Qdrant: `http://localhost:6333/dashboard`
