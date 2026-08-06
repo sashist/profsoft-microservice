@@ -1,92 +1,70 @@
-# RAG AI Microservice (FastAPI + Qdrant + AsyncIOScheduler + Gemini)
+# ProfSoft AI Microservice
 
-Асинхронный RAG-микросервис (Retrieval-Augmented Generation) на базе **FastAPI**, векторной БД **Qdrant**, СУБД **PostgreSQL**, менеджера зависимостей **Poetry** и интеграции с **Google Gemini API**.
+Сервис асинхронного поиска по документации (RAG) на базе FastAPI, PostgreSQL, Qdrant и APScheduler.
 
----
+## Технологический стек
 
-## ⚡ Особенности и Архитектура
+- **FastAPI** — веб-фреймворк для обработки HTTP-запросов
+- **PostgreSQL + SQLAlchemy + Alembic** — хранение метаданных документов и миграции
+- **Qdrant** — векторная база данных
+- **AsyncIOScheduler (APScheduler)** — фоновый асинхронный воркер для индексации
+- **Poetry** — управление зависимостями и окружением
 
-- **Поиск по знаниям (RAG)**: Использование векторного поиска в Qdrant (`gemini-embedding-001`) + генерация контекстного ответа с указанием источников через `gemini-2.5-flash` (или OpenAI `gpt-4o-mini`).
-- **Асинхронный воркер**: `AsyncIOScheduler` обработка документов и фоновых задач в неблокирующих `asyncio.to_thread` потоках.
-- **Управление зависимостями**: Пакетный менеджер **Poetry**.
-- **Миграции базы данных**: SQLAlchemy + Alembic.
-- **Docker Orchestration**: Полная сборка кластера (Web, PostgreSQL, Qdrant) одной командой.
+## Запуск проекта
 
----
+### 1. Конфигурация перемененных окружения
 
-## 🚀 Быстрый запуск и проверка
+Скопируйте шаблон файла конфигурации:
 
-Любой человек, склонировавший этот репозиторий, может развернуть и протестировать микросервис за 3 простых шага:
-
-### 1. Настройка окружения
-Склонируйте репозиторий и создайте `.env` из шаблона:
 ```bash
-git clone <URL_РЕПОЗИТОРИЯ>
-cd PromtProject
 cp env.example .env
 ```
 
-В файле `.env` укажите ваш бесплатный ключ **Google Gemini API** (получить за 5 секунд на [Google AI Studio](https://aistudio.google.com/app/apikey)):
-```env
-GEMINI_API_KEY=AIzaSy...ваш_ключ_gemini...
-TEST_MODE=False
-```
+По умолчанию в `.env` включен автономный режим `TEST_MODE=True`, не требующий сторонних API-ключей. Для работы с внешними моделями укажите `GEMINI_API_KEY` или `OPENAI_API_KEY` и переключите `TEST_MODE=False`.
 
-### 2. Запуск в Docker
-Запустите все сервисы (FastAPI, Qdrant, PostgreSQL):
+### 2. Запуск сервисов
+
 ```bash
 docker compose up --build -d
 ```
 
-### 3. Автоматическая загрузка тестовых данных
-Выполните скрипт для заливки реалистичной базы знаний (HR, IT, безопасность, удаленка):
+Сервер FastAPI доступен по адресу `http://localhost:8000`.
+
+### 3. Загрузка тестовых данных
+
+Для наполнения базы тестовыми документами вызовите скрипт:
+
 ```bash
 python scripts/seed_data.py
 ```
 
----
+## Примеры использования API
 
-## 🧪 Проверка работы RAG API
+### 1. Добавление документа
 
-### Задать вопрос по документам:
+```bash
+curl -X POST http://localhost:8000/documents/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source": "wiki://policy",
+    "text": "Ежегодный оплачиваемый отпуск составляет 28 календарных дней."
+  }'
+```
+
+### 2. Поиск ответа по базе знаний (RAG)
+
 ```bash
 curl -X POST http://localhost:8000/ask \
   -H "Content-Type: application/json" \
-  -d '{"question": "Какую сумму компания компенсирует за мобильную связь и интернет при удаленке?"}'
+  -d '{"question": "Сколько дней составляет отпуск?"}'
 ```
 
-**Пример ответа**:
-```json
-{
-  "answer": "Компания компенсирует расходы на мобильную связь и интернет в размере 2500 рублей в месяц.\nИсточник: wiki://remote-work-regulations",
-  "sources": [
-    {
-      "source": "wiki://remote-work-regulations",
-      "doc_id": 16,
-      "score": 0.825
-    }
-  ]
-}
-```
+### 3. Получение списка документов и статусов
 
-### Задать вопрос НЕ по документации:
 ```bash
-curl -X POST http://localhost:8000/ask \
-  -H "Content-Type: application/json" \
-  -d '{"question": "Какое расстояние от Земли до Марса?"}'
+curl http://localhost:8000/documents/
 ```
 
-**Ответ системы**:
-```json
-{
-  "answer": "В документации нет информации для ответа.",
-  "sources": []
-}
-```
+## Веб-интерфейсы
 
----
-
-## 📊 Веб-интерфейс векторной базы Qdrant
-
-Дашборд Qdrant доступен по адресу:  
-🔗 [http://localhost:6333/dashboard](http://localhost:6333/dashboard)
+- Панель управления Qdrant: `http://localhost:6333/dashboard`
