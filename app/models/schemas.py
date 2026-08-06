@@ -24,3 +24,39 @@ class TaskCreate(BaseModel):
 
     external_id: str
     input_text: str
+
+
+class DocumentCreate(BaseModel):
+    """Request schema for adding a document to indexing queue."""
+
+    source: str
+    text: str
+
+
+class DocumentOut(BaseModel):
+    """Response schema for a document in indexing queue."""
+
+    id: int
+    source: str
+    status: str
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AskRequest(BaseModel):
+    question: str
+
+
+class SourceOut(BaseModel):
+    source: str
+    doc_id: int | None = None
+    section: int | None = None
+    text: str
+    score: float
+
+
+class AskResponse(BaseModel):
+    answer: str
+    sources: list[SourceOut]

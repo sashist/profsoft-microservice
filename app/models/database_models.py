@@ -23,3 +23,22 @@ class Task(Base):
     error = Column(Text, nullable=True)
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
+
+
+class Document(Base):
+    """ORM model for tracking document indexing status."""
+
+    __tablename__ = "documents"
+    __table_args__ = (
+        CheckConstraint(
+            "status IN ('idle', 'syncing', 'indexed', 'failed')",
+            name="ck_documents_status_valid",
+        ),
+    )
+
+    id = Column(Integer, primary_key=True)
+    source = Column(String, unique=True, index=True, nullable=False)
+    text = Column(Text, nullable=True)
+    status = Column(String, default="idle", nullable=False)
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)

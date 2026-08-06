@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "promt-project"
+version = "0.1.0"
+description = "AI Microservice with FastAPI, Qdrant, PostgreSQL and Async Scheduler"
+authors = ["Developer <user@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "0.115.12"
+uvicorn = {extras = ["standard"], version = "0.34.3"}
+sqlalchemy = "2.0.41"
+psycopg2-binary = "2.9.10"
+pydantic = "2.11.7"
+pydantic-settings = "2.9.1"
+openai = "^1.0.0"
+apscheduler = "^3.10.4"
+httpx = "^0.28.1"
+alembic = "^1.14.1"
+qdrant-client = "^1.13.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

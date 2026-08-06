@@ -2,9 +2,17 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install dependencies first for better layer caching
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Install poetry
+RUN pip install --no-cache-dir poetry
+
+# Configure poetry to install directly into global site-packages inside docker container
+RUN poetry config virtualenvs.create false
+
+# Copy project specification files first for caching
+COPY pyproject.toml poetry.lock* ./
+
+# Install project dependencies
+RUN poetry install --no-root --no-interaction --no-ansi
 
 # Copy application source
 COPY . .
